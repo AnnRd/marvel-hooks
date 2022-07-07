@@ -15,12 +15,11 @@ const AppHeader = () => {
                             end
                             style={({isActive}) => ({'color': isActive ? '#9f0013' : 'inherit'})}
                             to="/">Characters</NavLink></li>
-                    /
+                    
                     <li><NavLink
-                            end
                             style={({isActive}) => ({'color': isActive ? '#9f0013' : 'inherit'})}
-                            to="/comics">Comics</NavLink></li>
-                </ul>
+                            to="/comics">Comics</NavLink></li> {/* без end - нестрогое сравнение, чтобы заголовок Comics подсвечивался и при просмотре любого отдельного комикса */}
+                </ul> 
             </nav>
         </header>
     )
