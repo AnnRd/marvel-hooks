@@ -29,7 +29,6 @@ const SingleComicPage = () => {
     const content = !loading && !error && comic ? <View comic={comic}/> : null;
     const spinner = loading ? <Spinner/> : null;
     const errorMessage = error ? <ErrorMessage/> : null;
-    console.log(content);
 
     return (
        <>

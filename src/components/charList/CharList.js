@@ -1,5 +1,6 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
+import {CSSTransition, TransitionGroup} from 'react-transition-group';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
@@ -12,7 +13,7 @@ const CharList = (props) => {
     const [newItemsLoading, setNewItemsLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charListEnd, setCharListEnd] = useState(false);
-    const [selected, setSelected] = useState(null); //мое для активного стиля
+    const [selected, setSelected] = useState(null); //для активного стиля
 
     const {loading, error, getAllCharacters} = useMarvelService();
 
@@ -43,35 +44,53 @@ const CharList = (props) => {
         setSelected(selected => props.charId);
       }
 
+    const itemRefs = useRef([]);
+
+    const focusOnItem = (id) => {
+        itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
+        itemRefs.current[id].classList.add('char__item_selected');
+        itemRefs.current[id].focus();
+    }
+
     function renderCharacters(arr) {
-        const characters = arr.map( obj => {
+        const characters = arr.map( (obj, i) => {
             let imgStyle = {'objectFit' : 'cover'};
             if (obj.thumbnail.includes('image_not_available')) {
                 imgStyle = {'objectFit' : 'unset'};
             }            
-
-            let selectedClass = 'char__item  char__item_selected';
-
+            
             return (
-                <li
-                className={props.charId === obj.id ? selectedClass : 'char__item'}
-                key={obj.id}
-                onClick={() => {
-                    handleClick();
-                    props.onCharSelected(obj.id)
-                }}>
-                    <img src={obj.thumbnail} alt={obj.name}  style={imgStyle}/>
-                    <div className="char__name">{obj.name}</div>
-                </li>
+                <CSSTransition key={obj.id} timeout={500} classNames="char__item">
+                    <li 
+                        className="char__item"
+                        tabIndex={0}
+                        ref={el => itemRefs.current[i] = el}
+                        onClick={() => {
+                            handleClick();
+                            props.onCharSelected(obj.id);
+                            focusOnItem(i);
+                        }}
+                        onKeyPress={(event) => {
+                            if (event.key === ' ' || event.key === "Enter") {
+                                props.onCharSelected(obj.id);
+                                focusOnItem(i);
+                            }
+                        }}>
+                            <img src={obj.thumbnail} alt={obj.name} style={imgStyle}/>
+                            <div className="char__name">{obj.name}</div>
+                    </li>
+                </CSSTransition>
             )
             
         });
 
         return (
             <ul className="char__grid">
-                {characters}
-            </ul>
-        ) //Для центровки спиннера/ошибки
+                <TransitionGroup component={null}>
+                    {characters}
+                </TransitionGroup>
+            </ul> //Для центровки спиннера/ошибки
+        )
     }
         
     const items = renderCharacters(charList);
