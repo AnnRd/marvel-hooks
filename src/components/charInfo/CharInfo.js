@@ -11,7 +11,8 @@ import './charInfo.scss';
 const CharInfo = (props) => {
     const [character, setCharacter] = useState(null);
 
-    const {loading, error, getCharacter, clearError} = useMarvelService();
+    const {loading, error, getCharacter, clearError, process, setProcess} = useMarvelService();
+    //в зависимости от process будут рендерится разные кусочки интерфейса: заглушка, загрузка, ошибка или контент
 
     useEffect(() => {
         updateChar();
@@ -26,24 +27,41 @@ const CharInfo = (props) => {
 
         clearError(); //если появилась ошибка, она очистится перед новым запросом
         getCharacter(charId)
-            .then(onCharLoaded);
+            .then(onCharLoaded)
+            .then(() => setProcess('confirmed')); // состояние "подтвержденного" запроса. только когда данные уже установятся в стейт, можем передать, что в компоненте все ок, данные "подтверждены", тк действия асинхронные
     }
 
     const onCharLoaded = (character) => {
         setCharacter(character);
     }
 
-        const skeleton = character || loading || error ? null : <Sceleton/>; // "заглушка" пока не выбран никакой персонаж из charList
-        const content = !loading && !error && character ? <View character={character}/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const errorMessage = error? <ErrorMessage/> : null;
+    const setContent = (process, char) => {
+        switch (process) {
+            case 'waiting':
+                return <Sceleton/>;
+            case 'loading':
+                return <Spinner/>;
+            case 'confirmed':
+                return <View character={char}/>;
+            case 'error':
+                return <ErrorMessage/>;
+            default:
+                throw new Error('Unexpected process state');
+        }
+    }
+
+        // const skeleton = character || loading || error ? null : <Sceleton/>; // "заглушка" пока не выбран никакой персонаж из charList
+        // const content = !loading && !error && character ? <View character={character}/> : null;
+        // const spinner = loading ? <Spinner/> : null;
+        // const errorMessage = error? <ErrorMessage/> : null;
 
         return (
             <div className="char__info">
-                {skeleton}
+                {/* {skeleton}
                 {content}
                 {spinner}
-                {errorMessage}
+                {errorMessage} */}
+                {setContent(process, character)}
             </div>
         )
 }
