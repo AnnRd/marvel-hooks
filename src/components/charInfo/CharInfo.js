@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
 import useMarvelService from '../../services/MarvelService';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
-import Sceleton from '../skeleton/Skeleton'
+import setContent from '../../utils/setContent';
 
 import './charInfo.scss';
 
@@ -35,20 +32,7 @@ const CharInfo = (props) => {
         setCharacter(character);
     }
 
-    const setContent = (process, char) => {
-        switch (process) {
-            case 'waiting':
-                return <Sceleton/>;
-            case 'loading':
-                return <Spinner/>;
-            case 'confirmed':
-                return <View character={char}/>;
-            case 'error':
-                return <ErrorMessage/>;
-            default:
-                throw new Error('Unexpected process state');
-        }
-    }
+    
 
         // const skeleton = character || loading || error ? null : <Sceleton/>; // "заглушка" пока не выбран никакой персонаж из charList
         // const content = !loading && !error && character ? <View character={character}/> : null;
@@ -61,13 +45,13 @@ const CharInfo = (props) => {
                 {content}
                 {spinner}
                 {errorMessage} */}
-                {setContent(process, character)}
+                {setContent(process, View, character)}
             </div>
         )
 }
 
-const View = ({character}) => {
-    const {name, description, thumbnail, homepage, wiki, comics} = character;
+const View = ({data}) => {
+    const {name, description, thumbnail, homepage, wiki, comics} = data;
     const notAvailableImg = thumbnail.includes('image_not_available');
 
     return (
