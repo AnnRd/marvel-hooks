@@ -32,19 +32,8 @@ const CharInfo = (props) => {
         setCharacter(character);
     }
 
-    
-
-        // const skeleton = character || loading || error ? null : <Sceleton/>; // "заглушка" пока не выбран никакой персонаж из charList
-        // const content = !loading && !error && character ? <View character={character}/> : null;
-        // const spinner = loading ? <Spinner/> : null;
-        // const errorMessage = error? <ErrorMessage/> : null;
-
         return (
             <div className="char__info">
-                {/* {skeleton}
-                {content}
-                {spinner}
-                {errorMessage} */}
                 {setContent(process, View, character)}
             </div>
         )

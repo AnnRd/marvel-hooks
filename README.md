@@ -1,0 +1,1 @@
+![marvelApp](src/resources/img/marvelGif.gif)
